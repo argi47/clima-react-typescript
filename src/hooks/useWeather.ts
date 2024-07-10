@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import axios from 'axios'
 import { z } from 'zod'
 // import { object, string, number, InferOutput, parse } from 'valibot'
@@ -12,7 +13,7 @@ const WeatherSchema = z.object({
     temp_min: z.number(),
   })
 })
-type Weather = z.infer<typeof WeatherSchema>
+export type Weather = z.infer<typeof WeatherSchema>
 
 //  Valibot
 // const WeatherSchema = object({
@@ -26,6 +27,15 @@ type Weather = z.infer<typeof WeatherSchema>
 // type Weather = InferOutput<typeof WeatherSchema>
 
 export default function useWeather() {
+
+  const [weather, setWeather] = useState<Weather>({
+    name: '',
+    main: {
+      temp: 0,
+      temp_max: 0,
+      temp_min: 0
+    }
+  })
 
   const fetchWeather = async (search: SearchType) => {
 
@@ -46,8 +56,7 @@ export default function useWeather() {
       //  Zod
       const result = WeatherSchema.safeParse(weatherData)
       if (result.success) {
-        console.log(result.data.name)
-        console.log(result.data.main.temp)
+        setWeather(result.data)
       }
 
       //  Valibot
@@ -61,8 +70,12 @@ export default function useWeather() {
     }
   }
 
+  const hasWeatherData = useMemo(() => weather.name, [weather])
+
   return {
-    fetchWeather
+    weather,
+    fetchWeather,
+    hasWeatherData
   }
 
 }
