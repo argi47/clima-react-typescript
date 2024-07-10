@@ -29,7 +29,9 @@ export default function Form({ fetchWeather }: FormProps) {
 
     if (Object.values(search).includes('')) {
       setAlert('Todos los campos son obligatorios')
-      return
+    }
+    else {
+      setAlert('')
     }
 
     fetchWeather(search)
